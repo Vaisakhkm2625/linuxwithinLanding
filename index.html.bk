@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Centered Logo - Dragula Theme</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #1d1b27; /* Dark background */
+      color: #e0e0e0; /* Light text */
+      font-family: 'Courier New', Courier, monospace; /* Gritty typewriter style */
+    }
+    
+    .logo-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-grow: 1;
+    }
+
+    img {
+      max-width: 150px;
+      height: auto;
+      filter: brightness(0.8) contrast(1.2); /* Darkened and slightly sharpened logo */
+    }
+
+    .links {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .links a {
+      margin: 0 15px;
+      text-decoration: none;
+      color: #f72585; /* Neon pink for the links */
+      font-weight: bold;
+      transition: color 0.3s ease;
+    }
+
+    .links a:hover {
+      color: #7209b7; /* Neon purple on hover */
+    }
+
+    /* Optional glow effect for links */
+    .links a {
+      text-shadow: 0 0 5px #f72585, 0 0 10px #f72585;
+    }
+
+    .links a:hover {
+      text-shadow: 0 0 5px #7209b7, 0 0 15px #7209b7;
+    }
+  </style>
+</head>
+<body>
+  <div class="logo-container">
+    <img src="logo.png" alt="Your Logo">
+  </div>
+  
+  <div class="links">
+    <a href="https://github.com/yourusername" target="_blank">GitHub</a>
+    <a href="mailto:yourname@example.com">Email</a>
+    <a href="https://linkedin.com/in/yourusername" target="_blank">LinkedIn</a>
+  </div>
+</body>
+</html>
