@@ -51,7 +51,7 @@
   </section>
 
   <script>
-    const pinnedRepos = ['imagepdf', 'watermark-docx', 'collab-edit', 'hologram-math-preview']; // Add your pinned repo names here
+    const pinnedRepos = ['imagepdfocr',  'watermarkdocx', 'iotest', 'plymouth-themes-galary','linuxwithinlanding','equationsolvers']; // Add your pinned repo names here
 
     async function fetchRepos(forceRefresh = false) {
       const username = document.getElementById('username').value.trim();
@@ -111,20 +111,20 @@
         return;
       }
 
-      // Separate pinned and others
-      const pinned = [];
-      const others = [];
 
-      repos.forEach(repo => {
-        const name = repo.name.toLowerCase();
-        if (pinnedRepos.includes(name)) {
-          pinned.push(repo);
-        } else {
-          others.push(repo);
-        }
-      });
+        const repoMap = new Map(repos.map(r => [r.name.toLowerCase(), r]));
 
-      const allRepos = [...pinned, ...others];
+        const pinnedOrdered = pinnedRepos
+        .map(name => repoMap.get(name.toLowerCase()))
+        .filter(Boolean);
+
+        const others = repos.filter(r => !pinnedRepos.includes(r.name.toLowerCase()));
+
+        const allRepos = [...pinnedOrdered, ...others];
+
+
+      //const allRepos = pinned.concat(others)
+
 
       allRepos.forEach(repo => {
         const projectUrl = repo.name === `${username.toLowerCase()}.github.io`
