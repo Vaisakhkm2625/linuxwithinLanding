@@ -1,50 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>LinuxWith.in - Coming Soon</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" >
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LinuxWith.in - Coming Soon</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+</head>
+<body>
 
-    </head>
-    <body>
+  <section class="hero is-success is-halfheight">
+    <div class="hero-body">
+      <div>
+        <p class="title"><i class="fa-brands fa-linux"></i> <a href="https://nixos.org/">Nix</a>ify everything!</p>
+      </div>
+    </div>
+  </section>
 
-        <section class="hero is-success is-halfheight ">
-            <div class="hero-body ">
-                <div class="">
-<p class="title "><i class="fa-brands fa-linux"></i> <a href="https://nixos.org/">Nix</a>ify everything!</p> 
-                   <!-- <p class="title "><i class="fa-brands fa-linux"></i> LinuxWith.in</p> -->
-                    <!--<p class="subtitle">Coming soon.... with <i><b>linux Deskop </b></i>tips and tricks...</p>-->
-                </div>
+  <section class="container is-halfheight">
+    <br>
+    <div class="grid">
+      <div class="button cell"><a href="https://me.nixifying.my.id"><i class="fas fa-user"></i> My Site</a></div>
+      <div class="button cell"><a href="https://notes.nixifing.my.id"><i class="fas fa-pen"></i> Notes</a></div>
+      <div class="button cell"><a href="mailto:vaisakhkm2625@gmail.com"><i class="fas fa-envelope"></i> Email</a></div>
+      <div class="button cell"><a href="https://www.github.com/vaisakhkm2625"><i class="fab fa-github"></i> Github</a></div>
+      <div class="button cell"><a href="https://www.gitlab.com/vaisakhkm2625"><i class="fab fa-gitlab"></i> Gitlab</a></div>
+      <div class="button cell"><a href="https://discord.gg/ZjM8CE8BKG"><i class="fab fa-discord"></i> Discord</a></div>
+    </div>
+  </section>
+
+  <!-- GitHub Pages Project Cards Section -->
+  <section class="section">
+    <div class="container">
+      <subtitle class="title is-5">My Random GitHub Pages</subtitle>
+      <p class="subtitle">
+                    search with your username to see your github pages 
+      </p>
+
+      <div class="field has-addons mb-5 is-justify-content-center">
+        <div class="control is-expanded">
+          <input class="input" id="username" type="text" value="vaisakhkm2625" placeholder="Enter GitHub username">
+        </div>
+        <div class="control">
+          <button class="button is-link" onclick="fetchRepos()">Show Projects</button>
+        </div>
+      </div>
+
+      <div class="columns is-multiline" id="projects"></div>
+    </div>
+  </section>
+
+  <script>
+    const pinnedRepos = ['imagepdf', 'watermark-docx', 'collab-edit', 'hologram-math-preview']; // Add your pinned repo names here
+
+    async function fetchRepos(forceRefresh = false) {
+      const username = document.getElementById('username').value.trim();
+      const container = document.getElementById('projects');
+      container.innerHTML = '';
+
+      if (!username) return;
+
+      const cacheKey = `ghpages_cache_${username}`;
+      const cached = localStorage.getItem(cacheKey);
+      const cachedTime = localStorage.getItem(`${cacheKey}_time`);
+      const oneHour = 1000 * 60 * 60;
+
+      if (!forceRefresh && cached && cachedTime && (Date.now() - parseInt(cachedTime)) < oneHour) {
+        renderProjects(JSON.parse(cached), username);
+        return;
+      }
+
+      let page = 1;
+      let repos = [];
+      let hasNext = true;
+
+      try {
+        while (hasNext) {
+          const res = await fetch(`https://api.github.com/users/${username}/repos?per_page=100&page=${page}`);
+          if (!res.ok) {
+            container.innerHTML = `<div class="notification is-danger">Error fetching repos for ${username}</div>`;
+            return;
+          }
+          const data = await res.json();
+          repos = repos.concat(data);
+          hasNext = data.length === 100;
+          page++;
+        }
+
+        const filtered = repos.filter(repo =>
+          repo.has_pages || repo.name === `${username.toLowerCase()}.github.io`
+        );
+
+        localStorage.setItem(cacheKey, JSON.stringify(filtered));
+        localStorage.setItem(`${cacheKey}_time`, Date.now().toString());
+
+        renderProjects(filtered, username);
+
+      } catch (err) {
+        container.innerHTML = `<div class="notification is-danger">Something went wrong while fetching repos.</div>`;
+        console.error(err);
+      }
+    }
+
+    function renderProjects(repos, username) {
+      const container = document.getElementById('projects');
+      container.innerHTML = '';
+
+      if (!repos.length) {
+        container.innerHTML = `<div class="notification is-warning">No GitHub Pages projects found.</div>`;
+        return;
+      }
+
+      // Separate pinned and others
+      const pinned = [];
+      const others = [];
+
+      repos.forEach(repo => {
+        const name = repo.name.toLowerCase();
+        if (pinnedRepos.includes(name)) {
+          pinned.push(repo);
+        } else {
+          others.push(repo);
+        }
+      });
+
+      const allRepos = [...pinned, ...others];
+
+      allRepos.forEach(repo => {
+        const projectUrl = repo.name === `${username.toLowerCase()}.github.io`
+          ? `https://${repo.name}`
+          : `https://${username}.github.io/${repo.name}`;
+
+        const column = document.createElement('div');
+        column.className = 'column is-half';
+
+        column.innerHTML = `
+          <div class="card">
+            <div class="card-content is-flex is-justify-content-space-between is-align-items-center">
+              <a href="${projectUrl}" target="_blank" class="has-text-link has-text-weight-semibold">${repo.name}</a>
+              <a href="${repo.html_url}" target="_blank" title="GitHub Repo">
+                <span class="icon is-small"><i class="fab fa-github"></i></span>
+              </a>
             </div>
-        </section>
+          </div>
+        `;
 
+        container.appendChild(column);
+      });
+    }
 
-        <section class="container is-halfheight ">
+    // Auto-load on page load
+    window.addEventListener('DOMContentLoaded', () => fetchRepos());
+  </script>
 
-            <br>
-            <div class="grid">
-                <div class="button cell"> 
-                    <a href="https://me.nixifying.my.id"> <i class="fas fa-user"></i> My Site </a> 
-                </div>
-                <div class="button cell"> 
-                    <a href="https://notes.nixifing.my.id"> <i class="fas fa-pen"></i> Notes </a> 
-                </div>
-                <div class="button cell"> 
-                    <a href="mailto:vaisakhkm2625@gmail.com"> <i class="fas fa-envelope"></i> Email </a> 
-                </div>
-                <div class="button cell"> 
-                    <a href="https://www.github.com/vaisakhkm2625"> <i class="fab fa-github"></i> Github </a> 
-                </div>
-                <div class="button cell"> 
-                    <a href="https://www.gitlab.com/vaisakhkm2625"> <i class="fab fa-gitlab"></i> Gitlab </a> 
-                </div>
-                <div class="button cell"> 
-                    <a href="https://discord.gg/ZjM8CE8BKG"> <i class="fab fa-discord"></i> Discord </a> 
-                </div>
-            </div>
-        </section>
-
-    </body>
+</body>
 </html>
